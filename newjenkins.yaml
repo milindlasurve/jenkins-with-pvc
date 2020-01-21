@@ -1,0 +1,86 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+  labels:
+    app: jenkins-new-20012019-new1
+  name: jenkins-new-20012019-new1
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    app: jenkins-new-20012019-new1
+    deploymentconfig: jenkins-new-20012019-new1
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      labels:
+        app: jenkins-new-20012019-new1
+        deploymentconfig: jenkins-new-20012019-new1
+    spec:
+      containers:
+        - image: jenkins/jenkins
+          imagePullPolicy: Always
+          name: jenkins-new-20012019-new1
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 50000
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: volume-peghu
+      dnsPolicy: ClusterFirst
+      hostAliases:
+        - hostnames:
+            - masterdnswtur3f4w6lshw.southindia.cloudapp.azure.com
+          ip: 172.19.64.8
+        - hostnames:
+            - prod-jenkins.13.71.81.159.nip.io
+          ip: 172.19.64.71
+        - hostnames:
+            - prod-gitea.13.71.81.159.nip.io
+          ip: 172.19.64.71
+        - hostnames:
+            - icici-server15.13.71.81.159.nip.io
+          ip: 172.19.64.71
+        - hostnames:
+            - manager.icp-proxy.13.71.81.159.nip.io
+          ip: 172.19.64.71
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: volume-peghu
+          persistentVolumeClaim:
+            claimName: prod-jenkins-storage
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - jenkins-new-20012019-new1
+        from:
+          kind: ImageStreamTag
+          name: 'jenkins-new-20012019-new1:latest'
+          namespace: production
+        lastTriggeredImage: jenkins/jenkins
+      type: ImageChange
